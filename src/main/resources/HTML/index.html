@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<HTML>
+	<HEAD>
+		<TITLE>ステータス</TITLE>
+
+		<!--OGPを書く-->
+
+		<STYLE>
+			.SERVER_LIST{
+				padding: 5px;
+			}
+
+			.SERVER_LIST > .SERVER_ITEM{
+				display: flex;
+
+				border: solid 1px rgb(196, 196, 196);
+
+				padding: 5px;
+			}
+
+			.SERVER_LIST > .SERVER_ITEM > .INFO{
+				flex: 9;
+			}
+
+			.SERVER_LIST > .SERVER_ITEM > .INFO > .EP{
+				color: gray;
+			}
+
+			.SERVER_LIST > .SERVER_ITEM > .STATUS{
+				flex: 1;
+
+				text-align: right;
+
+				vertical-align: middle;
+			}
+
+			.SERVER_LIST > .SERVER_ITEM > .STATUS > image{
+				vertical-align: middle;
+			}
+		</STYLE>
+	</HEAD>
+	<BODY>
+		<DIV CLASS="HEADER">
+			<H1>ステータス</H1>
+		</DIV>
+		<DIV CLASS="CONTENTS">${CONTENTS}</DIV>
+	</BODY>
+</HTML>
