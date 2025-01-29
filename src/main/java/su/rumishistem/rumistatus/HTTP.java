@@ -39,6 +39,8 @@ public class HTTP {
 								e.REPLY_String(404, "404");
 							}
 						}
+					} else if (e.getEXCHANGE().getRequestURI().getPath().startsWith("/favicon.ico")) {
+						e.REPLY_BYTE(200, new RESOURCE_MANAGER().getResourceData("/Asset/favicon.ico"));
 					} else {
 						//基盤をロード
 						String BASE_HTML = new String(new RESOURCE_MANAGER().getResourceData("/HTML/index.html"));
