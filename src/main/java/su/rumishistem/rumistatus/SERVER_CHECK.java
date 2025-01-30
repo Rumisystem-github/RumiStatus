@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import su.rumishistem.rumi_java_lib.FETCH;
 import su.rumishistem.rumi_java_lib.FETCH_RESULT;
 import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
+import su.rumishistem.rumistatus.MODULE.RSC_Ping;
 import su.rumishistem.rumistatus.TYPE.SERVER_DATA;
 import su.rumishistem.rumistatus.TYPE.SERVER_STATUS;
 
@@ -41,13 +42,24 @@ public class SERVER_CHECK {
 								FETCH_RESULT RESULT = AJAX.GET();
 								if (RESULT.GetSTATUS_CODE() == 200) {
 									SERVER.setSTATUS(SERVER_STATUS.OK);
+									SERVER.setPING(RESULT.GetPING());
 								} else {
 									SERVER.setSTATUS(SERVER_STATUS.NG);
 								}
 								break;
 							}
 
+							case RSC: {
+								RSC_Ping RSC = new RSC_Ping(SERVER.getEP());
+								RSC.Ping();
+								SERVER.setSTATUS(RSC.getSTATUS());
+								SERVER.setPING(RSC.getPING());
+								break;
+							}
+
 							default: {
+								SERVER.setSTATUS(SERVER_STATUS.WHAT);
+
 								if (VERBOSE) {
 									LOG(LOG_TYPE.OK, "Skip:" + SERVER.getID());
 									LOG(LOG_TYPE.INFO, "Reason:Protcol ga wakaran");

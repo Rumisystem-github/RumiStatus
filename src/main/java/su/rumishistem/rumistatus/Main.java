@@ -19,6 +19,8 @@ import su.rumishistem.rumistatus.MODULE.EX_PRINTER;
 import su.rumishistem.rumistatus.TYPE.SERVER_DATA;
 
 public class Main {
+	public static final int RSC_PORT = 3322;
+
 	public static LocalDateTime UPDATE_TIME = LocalDateTime.now();
 	public static ArrayNode CONFIG_DATA = null;
 	public static List<SERVER_DATA> SERVER_LIST = new ArrayList<SERVER_DATA>();
@@ -32,6 +34,13 @@ public class Main {
 			for (String arg:args) {
 				if (arg.equals("--verbose")) {
 					VERBOSE = true;
+				}
+
+				if (arg.equals("--connector")) {
+					LOG(LOG_TYPE.INFO, "コネクターモードで起動します");
+					LOG(LOG_TYPE.INFO, "ポート番号は既定値の" + RSC_PORT + "です");
+					RSC_SERVER.Main();
+					return;
 				}
 			}
 

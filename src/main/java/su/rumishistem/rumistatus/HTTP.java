@@ -37,6 +37,12 @@ public class HTTP {
 								break;
 							}
 
+							case "/Asset/WHAT.png": {
+								e.setHEADER("Content-Type", "image/png");
+								e.REPLY_BYTE(200, new RESOURCE_MANAGER().getResourceData("/Asset/WHAT.png"));
+								break;
+							}
+
 							default: {
 								e.REPLY_String(404, "404");
 							}
@@ -63,7 +69,8 @@ public class HTTP {
 									SERVER_LIST_HTML += SERVER_ITEM_HTML
 										.replace("${ID}", SERVER.getID())
 										.replace("${NAME}", SERVER.getNAME())
-										.replace("${EP}", SERVER.getEP())
+										.replace("${EP}", SERVER.getEPFuck())
+										.replace("${PING}", String.valueOf(SERVER.getPING()))
 										.replace("${STATUS}", SERVER.getSTATUS().name());
 								} else {
 									SERVER_LIST_HTML += "<H2>" + SERVER.getNAME() + "</H2>";
@@ -82,6 +89,7 @@ public class HTTP {
 								.replace("${NAME}", SERVER.getNAME())
 								.replace("${DESC}", SERVER.getDESC().replace("\n", "<BR>"))
 								.replace("${EP}", SERVER.getEP())
+								.replace("${PING}", String.valueOf(SERVER.getPING()))
 								.replace("${STATUS}", SERVER.getSTATUS().name());
 
 							BASE_HTML = BASE_HTML.replace("${CONTENTS}", SERVER_INFO_HTML);
