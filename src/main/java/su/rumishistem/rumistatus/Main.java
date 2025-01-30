@@ -22,11 +22,18 @@ public class Main {
 	public static LocalDateTime UPDATE_TIME = LocalDateTime.now();
 	public static ArrayNode CONFIG_DATA = null;
 	public static List<SERVER_DATA> SERVER_LIST = new ArrayList<SERVER_DATA>();
+	public static boolean VERBOSE = false;
 
 	public static void main(String[] args) {
 		try {
 			LOG(LOG_TYPE.INFO, "--------------------<Rumi Status>--------------------");
 			LOG(LOG_TYPE.INFO, "うんこ");
+
+			for (String arg:args) {
+				if (arg.equals("--verbose")) {
+					VERBOSE = true;
+				}
+			}
 
 			//設定ファイルをロード
 			LOG(LOG_TYPE.PROCESS, "Loading Config.ini");
@@ -50,8 +57,8 @@ public class Main {
 					SERVER_LIST.add(new SERVER_DATA(
 						SERVER.get("ID").asText(),
 						SERVER.get("NAME").asText(),
-						SERVER.get("DESC").asText(),
-						SERVER.get("EP").asText()
+						SERVER.get("DESC") != null ? SERVER.get("DESC").asText() : null,
+						SERVER.get("EP") != null ? SERVER.get("EP").asText() : null
 					));
 				}
 

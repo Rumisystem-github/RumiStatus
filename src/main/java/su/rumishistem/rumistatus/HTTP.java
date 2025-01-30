@@ -3,6 +3,7 @@ package su.rumishistem.rumistatus;
 import static su.rumishistem.rumistatus.Main.UPDATE_TIME;
 import static su.rumishistem.rumistatus.Main.CONFIG_DATA;
 import static su.rumishistem.rumistatus.Main.SERVER_LIST;
+import static su.rumishistem.rumistatus.Main.VERBOSE;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +13,7 @@ import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_SERVER;
 import su.rumishistem.rumi_java_lib.RESOURCE.RESOURCE_MANAGER;
 import su.rumishistem.rumistatus.MODULE.EX_PRINTER;
+import su.rumishistem.rumistatus.MODULE.SERVER_DATA_RESOLVE;
 import su.rumishistem.rumistatus.TYPE.SERVER_DATA;
 
 public class HTTP {
@@ -46,35 +48,47 @@ public class HTTP {
 						String BASE_HTML = new String(new RESOURCE_MANAGER().getResourceData("/HTML/index.html"));
 						int HTTP_STATUS_CODE = 200;
 
-						switch (e.getEXCHANGE().getRequestURI().getPath()) {
+						if (e.getEXCHANGE().getRequestURI().getPath().equals("/")) {
 							//トップページ
-							case "/": {
-								String SERVER_ITEM_HTML = new String(new RESOURCE_MANAGER().getResourceData("/HTML/SERVER_ITEM.html"));
-								String SERVER_LIST_HTML = "";
+							String SERVER_ITEM_HTML = new String(new RESOURCE_MANAGER().getResourceData("/HTML/SERVER_ITEM.html"));
+							String SERVER_LIST_HTML = "";
 
-								//更新日時をセット
-								SERVER_LIST_HTML += "<H1>"+UPDATE_TIME.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分ss秒"))+"時点</H1>";
+							//更新日時をセット
+							SERVER_LIST_HTML += "<H1>"+UPDATE_TIME.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH時mm分ss秒"))+"時点</H1>";
 
-								//サーバー一覧を生成
-								SERVER_LIST_HTML += "<DIV CLASS=\"SERVER_LIST\">";
-								for (SERVER_DATA SERVER:SERVER_LIST) {
+							//サーバー一覧を生成
+							SERVER_LIST_HTML += "<DIV CLASS=\"SERVER_LIST\">";
+							for (SERVER_DATA SERVER:SERVER_LIST) {
+								if (!SERVER.getID().equals("-_HR_-")) {
 									SERVER_LIST_HTML += SERVER_ITEM_HTML
+										.replace("${ID}", SERVER.getID())
 										.replace("${NAME}", SERVER.getNAME())
 										.replace("${EP}", SERVER.getEP())
 										.replace("${STATUS}", SERVER.getSTATUS().name());
+								} else {
+									SERVER_LIST_HTML += "<H2>" + SERVER.getNAME() + "</H2>";
 								}
-								SERVER_LIST_HTML += "</DIV>";
-
-								//コンテンツを基盤にセット
-								BASE_HTML = BASE_HTML.replace("${CONTENTS}", SERVER_LIST_HTML);
-								break;
 							}
+							SERVER_LIST_HTML += "</DIV>";
 
-							//ページがない
-							default: {
-								BASE_HTML = BASE_HTML.replace("${CONTENTS}", "ページがない");
-								HTTP_STATUS_CODE = 404;
-							}
+							//コンテンツを基盤にセット
+							BASE_HTML = BASE_HTML.replace("${CONTENTS}", SERVER_LIST_HTML);
+						} else if (SERVER_DATA_RESOLVE.getID(e.getEXCHANGE().getRequestURI().getPath().replace("/", "")) != null) {
+							//サーバー情報
+							SERVER_DATA SERVER = SERVER_DATA_RESOLVE.getID(e.getEXCHANGE().getRequestURI().getPath().replace("/", ""));
+							String SERVER_INFO_HTML = new String(new RESOURCE_MANAGER().getResourceData("/HTML/SERVER_INFO.html"));
+							SERVER_INFO_HTML = SERVER_INFO_HTML
+								.replace("${ID}", SERVER.getID())
+								.replace("${NAME}", SERVER.getNAME())
+								.replace("${DESC}", SERVER.getDESC().replace("\n", "<BR>"))
+								.replace("${EP}", SERVER.getEP())
+								.replace("${STATUS}", SERVER.getSTATUS().name());
+
+							BASE_HTML = BASE_HTML.replace("${CONTENTS}", SERVER_INFO_HTML);
+						} else {
+							//404
+							BASE_HTML = BASE_HTML.replace("${CONTENTS}", "ページがない");
+							HTTP_STATUS_CODE = 404;
 						}
 
 						//応答
@@ -86,6 +100,7 @@ public class HTTP {
 				}
 			}
 		});
+		HS.setVERBOSE(VERBOSE);
 		HS.START_HTTPSERVER();
 	}
 }

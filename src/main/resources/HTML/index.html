@@ -10,32 +10,60 @@
 				padding: 5px;
 			}
 
-			.SERVER_LIST > .SERVER_ITEM{
+			.SERVER_LIST > a{
+				text-decoration: none;
+				color: black;
+			}
+
+			.SERVER_ITEM{
 				display: flex;
 
 				border: solid 1px rgb(196, 196, 196);
 
+				margin: 5px;
 				padding: 5px;
 			}
 
-			.SERVER_LIST > .SERVER_ITEM > .INFO{
-				flex: 9;
+			.SERVER_ITEM > .INFO{
+				padding-left: 5px;
 			}
 
-			.SERVER_LIST > .SERVER_ITEM > .INFO > .EP{
+			.SERVER_ITEM > .INFO > .EP{
 				color: gray;
 			}
 
-			.SERVER_LIST > .SERVER_ITEM > .STATUS{
-				flex: 1;
-
-				text-align: right;
-
+			.SERVER_ITEM > .STATUS{
 				vertical-align: middle;
 			}
 
-			.SERVER_LIST > .SERVER_ITEM > .STATUS > image{
+			.SERVER_ITEM > .STATUS > img{
 				vertical-align: middle;
+
+				width: 5px;
+				height: 100%;
+			}
+		</STYLE>
+
+		<STYLE>
+			.KUSA{
+				display: flex;
+
+				width: 300px;
+				
+				text-align: right;
+			}
+
+			.KUSA > div {
+				margin: 2px;
+			}
+
+			.KUSA > div > div{
+				margin-bottom: -5px;
+			}
+
+			.KUSA > div > div > img{
+				width: 10px;
+				height: 10px;
 			}
 		</STYLE>
 	</HEAD>

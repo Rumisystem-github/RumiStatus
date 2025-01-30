@@ -5,6 +5,7 @@ import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
 import static su.rumishistem.rumistatus.Main.UPDATE_TIME;
 import static su.rumishistem.rumistatus.Main.CONFIG_DATA;
 import static su.rumishistem.rumistatus.Main.SERVER_LIST;
+import static su.rumishistem.rumistatus.Main.VERBOSE;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
@@ -23,37 +24,50 @@ public class SERVER_CHECK {
 		Runnable TASK = new Runnable() {
 			@Override
 			public void run() {
-				LOG(LOG_TYPE.PROCESS, "Check...");
+				if (VERBOSE) {
+					LOG(LOG_TYPE.PROCESS, "Check...");
+				}
 
 				for (SERVER_DATA SERVER:SERVER_LIST) {
 					try {
-						switch (SERVER.getPROTOCOL()) {
-						case HTTP: {
-							FETCH AJAX = new FETCH(SERVER.getEP());
-							FETCH_RESULT RESULT = AJAX.GET();
-							if (RESULT.GetSTATUS_CODE() == 200) {
-								SERVER.setSTATUS(SERVER_STATUS.OK);
-							} else {
-								SERVER.setSTATUS(SERVER_STATUS.NG);
-							}
-							break;
-						}
-
-						default: {
-							LOG(LOG_TYPE.OK, "Skip:" + SERVER.getID());
-							LOG(LOG_TYPE.INFO, "Reason:Protcol ga wakaran");
+						//ヘッダーならスキップ
+						if (SERVER.getID().equals("-_HR_-")) {
 							continue;
 						}
-					}
 
-					//成功
-					LOG(LOG_TYPE.OK, "Get:" + SERVER.getID());
+						switch (SERVER.getPROTOCOL()) {
+							case HTTP: {
+								FETCH AJAX = new FETCH(SERVER.getEP());
+								FETCH_RESULT RESULT = AJAX.GET();
+								if (RESULT.GetSTATUS_CODE() == 200) {
+									SERVER.setSTATUS(SERVER_STATUS.OK);
+								} else {
+									SERVER.setSTATUS(SERVER_STATUS.NG);
+								}
+								break;
+							}
+
+							default: {
+								if (VERBOSE) {
+									LOG(LOG_TYPE.OK, "Skip:" + SERVER.getID());
+									LOG(LOG_TYPE.INFO, "Reason:Protcol ga wakaran");
+								}
+								continue;
+							}
+						}
+
+						//成功
+						if (VERBOSE) {
+							LOG(LOG_TYPE.OK, "Get:" + SERVER.getID());
+						}
 					} catch (Exception EX) {
 						//エラーが発生したらステータスをNGにする
 						SERVER.setSTATUS(SERVER_STATUS.NG);
 
 						//失敗
-						LOG(LOG_TYPE.FAILED, "Get:" + SERVER.getID());
+						if (VERBOSE) {
+							LOG(LOG_TYPE.FAILED, "Get:" + SERVER.getID());
+						}
 					}
 				}
 
@@ -61,7 +75,9 @@ public class SERVER_CHECK {
 				UPDATE_TIME = LocalDateTime.now();
 
 				//完了
-				LOG(LOG_TYPE.OK, "All server checked!");
+				if (VERBOSE) {
+					LOG(LOG_TYPE.OK, "All server checked!");
+				}
 			}
 		};
 
