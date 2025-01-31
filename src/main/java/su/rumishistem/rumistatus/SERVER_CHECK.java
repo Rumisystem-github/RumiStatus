@@ -42,7 +42,7 @@ public class SERVER_CHECK {
 								FETCH_RESULT RESULT = AJAX.GET();
 								if (RESULT.GetSTATUS_CODE() == 200) {
 									SERVER.setSTATUS(SERVER_STATUS.OK);
-									SERVER.setPING(RESULT.GetPING());
+									SERVER.setPING(Math.toIntExact(RESULT.GetPING()));
 								} else {
 									SERVER.setSTATUS(SERVER_STATUS.NG);
 								}
