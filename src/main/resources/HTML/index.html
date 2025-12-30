@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<HTML>
+	<HEAD>
+		<TITLE>ステータスページ</TITLE>
+
+		<LINK REL="stylesheet" HREF="https://cdn.rumia.me/CSS/font.css">
+		<LINK REL="stylesheet" HREF="https://cdn.rumia.me/CSS/reset.css">
+		<LINK REL="stylesheet" HREF="https://cdn.rumia.me/CSS/DEFAULT.css">
+
+		<LINK REL="stylesheet" HREF="/Style/Main.css">
+	</HEAD>
+	<BODY>
+		<H1>ステータス V1.5β</H1>
+
+		<DIV><SPAN ID="UPDATE_AT"></SPAN>時点で</DIV>
+		<DIV ID="STATUS_LIST"></DIV>
+	</BODY>
+	<SCRIPT>
+		let mel = {
+			update_at: document.getElementById("UPDATE_AT"),
+			status_list: document.getElementById("STATUS_LIST")
+		};
+
+		window.addEventListener("load", async (e)=>{
+			let ajax = await fetch("/api/Server");
+			const result = await ajax.json();
+			if (result.STATUS == false) {
+				alert("エラー");
+				return;
+			}
+
+			const update_at = new Date(result.UPDATE_AT);
+			mel.update_at.innerText = `${update_at.getMonth()}月${update_at.getDate()}日${update_at.getHours()}時${update_at.getMinutes()}分`;
+
+			for (const status of result.LIST) {
+				mel.status_list.append(gen_status_item(status));
+			}
+		});
+
+		function gen_status_item(status) {
+			let item = document.createElement("DIV");
+			item.className = "STATUS_ITEM";
+
+			let ind = document.createElement("IMG");
+			ind.src = `/Asset/${status.STATUS}.png`;
+			item.append(ind);
+
+			let g = document.createElement("DIV");
+			item.append(g);
+
+			let name = document.createElement("DIV");
+			name.innerText = status.NAME;
+			g.append(name);
+
+			//TODO:縦7でテーブルを作る
+			let table = document.createElement("TABLE");
+			g.append(table);
+
+			return item;
+		}
+	</SCRIPT>
+</HTML>

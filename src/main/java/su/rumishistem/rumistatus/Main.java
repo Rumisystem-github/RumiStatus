@@ -26,10 +26,12 @@ import su.rumishistem.rumi_java_lib.CONFIG;
 import su.rumishistem.rumi_java_lib.Ajax.Ajax;
 import su.rumishistem.rumi_java_lib.Ajax.AjaxResult;
 import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
+import su.rumishistem.rumi_java_lib.RESOURCE.RESOURCE_MANAGER;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_REQUEST;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_RESULT;
 import su.rumishistem.rumi_java_lib.SmartHTTP.SmartHTTP;
 import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointFunction;
+import su.rumishistem.rumistatus.API.Server.GetServer;
 import su.rumishistem.rumistatus.Type.Protocol;
 import su.rumishistem.rumistatus.Type.Server;
 import su.rumishistem.rumistatus.Type.ServerStatus;
@@ -94,32 +96,16 @@ public class Main {
 
 		SmartHTTP http = new SmartHTTP(config.get("HTTP").getData("PORT").asInt());
 
-		http.SetRoute("/api/Server", Method.GET, new EndpointFunction() {
+		http.SetRoute("/api/Server", Method.GET, new GetServer());
+		http.SetRoute("/", new EndpointFunction() {
 			@Override
 			public HTTP_RESULT Run(HTTP_REQUEST r) throws Exception {
-				List<Object> list = new ArrayList<Object>();
-
-				for (Server server:server_list) {
-					list.add(new HashMap<String, Object>(){{
-						put("ID", server.id);
-						put("NAME", server.name);
-						put("DESCRIPTION", server.description);
-						put("STATUS", server.status.name());
-						put("PROTOCOL", server.protocol.name());
-						put("ISTORIA", new Object[] {
-							server.status.name()
-						});
-						put("PING", server.ping);
-					}});
-				}
-
-				return new HTTP_RESULT(200, new ObjectMapper().writeValueAsString(new LinkedHashMap<String, Object>(){{
-					put("STATUS", true);
-					put("UPDATE_AT", last_sync_date.atOffset(ZoneOffset.ofHours(9)).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
-					put("LIST", list);
-				}}).getBytes(), "application/json");
+				return new HTTP_RESULT(200, new RESOURCE_MANAGER(Main.class).getResourceData("/HTML/index.html"), "text/html; charset=UTF-8");
 			}
 		});
+		http.SetResourceDir("/Style", "/HTML/Style", Main.class);
+		http.SetResourceDir("/Script", "/HTML/Script", Main.class);
+		http.SetResourceDir("/Asset", "/HTML/Asset", Main.class);
 
 		http.Start();
 	}
@@ -152,5 +138,7 @@ public class Main {
 		}
 
 		last_sync_date = LocalDateTime.now();
+
+		LOG(LOG_TYPE.OK, "同期しました。");
 	}
 }
