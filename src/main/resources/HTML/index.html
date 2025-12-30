@@ -52,6 +52,10 @@
 			name.innerText = status.NAME;
 			g.append(name);
 
+			let protocol = document.createElement("DIV");
+			protocol.innerText = status.PROTOCOL;
+			g.append(protocol);
+
 			//TODO:縦7でテーブルを作る
 			let table = document.createElement("TABLE");
 			g.append(table);

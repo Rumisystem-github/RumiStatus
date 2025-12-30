@@ -119,11 +119,16 @@ public class Main {
 				switch (server_list[i].protocol) {
 					case HTTP:
 						Ajax ajax = new Ajax(server_list[i].endpoint);
-						AjaxResult result = ajax.GET();
-						if (result.get_code() == 200) {
+						if (ajax.GET().get_code() == 200) {
 							server_list[i].status = ServerStatus.OK;
 						} else {
-							server_list[i].status = ServerStatus.NG;
+							//↓誰がどう見てもMisskey用
+							ajax.set_header("Content-Type", "application/json");
+							if (ajax.POST("{}".getBytes()).get_code() == 200) {
+								server_list[i].status = ServerStatus.OK;
+							} else {
+								server_list[i].status = ServerStatus.NG;
+							}
 						}
 						break;
 				}
